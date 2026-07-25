@@ -77,3 +77,27 @@
   - Determinism: byte-identical output on repeat runs
   - Noise filtering: all noise types excluded with correct reasons
 - **Result**: ✓
+
+## Entry 6
+
+- **Task**: Rebuild ctxpack.py using skills methodology
+- **Objective**: Rebuild ctxpack CLI tool from scratch using sdd/plan-task, subagent-driven-development, and implement-task workflows
+- **Skills loaded**: `improve-codebase-architecture`, `systematic-debugging`
+- **Skills installed**: `prompt-engineering` (manually), `context-engineering-kit` (via git clone)
+- **Sub-skills read and applied**: `sdd/plan-task`, `sdd/implement-task`, `sadd/subagent-driven-development`, `context-engineering`
+- **Agents used**: 3x `general` sub-agents via task tool (batch 1: constants/token/CLI → lines 1-68; batch 2: scanner/parser/ranker → lines 71-210; batch 3: tree/packer/manifest/orchestrator → lines 213-409)
+- **Tools used**: Write, Edit, Bash, Read, Grep, Task, Todowrite, Question
+- **Files affected**: ctxpack.py (full rewrite), docs/DEVELOPMENT_LOG.md (this entry), docs/CONTEXT_ENGINEERING_KIT.md, .specs/rebuild-ctxpack.md, docs/IMPROVE_CODEBASE_ARCHITECTURE_SKILL.md
+- **Implementation summary**: Rebuilt ctxpack.py as single 409-line file with 8 functional sections. Used subagent-driven-development: dispatched fresh sub-agents per component batch, reviewed output, fixed bugs between batches. Project restructured: supporting docs moved from root to docs/. Context Engineering Kit installed from https://github.com/NeoLabHQ/context-engineering-kit and sub-skill SKILL.md files read directly (not loadable via skill tool).
+- **Issues**:
+  - `code_end` duplication in bundle_files section assembly (line 296) — `overhead + content + code_end` should be `file_header + code_start + content + code_end` — caught and fixed during review of batch 3 output
+  - Sub-agents cannot load skills (skills only available in main session) — sub-agent prompts must include skill content inline
+  - `prompt-engineering` skill installed but cannot be loaded at runtime (only at OpenCode startup) — SKILL.md read directly
+  - Files written by sub-agents on Windows have mixed line endings — normalized during review
+- **Verification**:
+  - Error handling: correct exit codes (no args → 1, bad path → 2, bad budget → 1, zero budget → 1)
+  - Budget compliance: tested budgets 10, 50, 100, 500, 2000 — all PASS (never exceeds budget)
+  - Determinism: byte-identical output on repeat runs (PASS)
+  - Noise filtering: package-lock.json excluded with correct reason (PASS)
+  - Bundle format: correct markdown with header, task, tree, file sections with language-specific code fences (PASS)
+- **Result**: ✓
