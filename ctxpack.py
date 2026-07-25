@@ -14,7 +14,9 @@ NOISE_EXTENSIONS = frozenset({'.pyc', '.pyo', '.png', '.jpg', '.jpeg', '.gif', '
 
 NOISE_DIR_REASONS = {'.git': 'Version control directory', 'node_modules': 'Dependency directory', '__pycache__': 'Python cache directory', '.venv': 'Virtual environment', 'venv': 'Virtual environment', 'env': 'Virtual environment', '.eggs': 'Python egg directory', 'dist': 'Build artifact', 'build': 'Build artifact', 'target': 'Build artifact', '.next': 'Build artifact', '.nuxt': 'Build artifact', '.idea': 'IDE metadata directory', '.vscode': 'IDE metadata directory', '.svn': 'Version control directory', '.hg': 'Version control directory', '.mypy_cache': 'Type checking cache', '.pytest_cache': 'Testing cache', '.ruff_cache': 'Linting cache', '.hypothesis': 'Testing cache'}
 
-EXTENSION_SCORES = {'.py': 10, '.js': 10, '.ts': 10, '.jsx': 10, '.tsx': 10, '.go': 10, '.rs': 10, '.java': 10, '.kt': 10, '.scala': 10, '.c': 10, '.cpp': 10, '.h': 10, '.hpp': 10, '.rb': 9, '.php': 9, '.swift': 9, '.sh': 8, '.bash': 8, '.zsh': 8, '.ps1': 8, '.bat': 8, '.md': 7, '.rst': 7, '.tex': 7, '.yaml': 5, '.yml': 5, '.toml': 5, '.cfg': 5, '.ini': 5, '.conf': 5, '.css': 4, '.scss': 4, '.less': 4, '.html': 4, '.svelte': 4, '.vue': 4, '.json': 3, '.xml': 3, '.csv': 3, '.sql': 6, '.dockerfile': 6, '.dockerignore': 6, '.gitignore': 5, '.gitattributes': 5, '.env': 5, '.env.example': 5}
+EXTENSION_SCORES = {'.py': 10, '.js': 10, '.ts': 10, '.jsx': 10, '.tsx': 10, '.go': 10, '.rs': 10, '.java': 10, '.kt': 10, '.scala': 10, '.c': 10, '.cpp': 10, '.h': 10, '.hpp': 10, '.rb': 9, '.php': 9, '.swift': 9, '.sh': 8, '.bash': 8, '.zsh': 8, '.ps1': 8, '.bat': 8, '.md': 7, '.rst': 7, '.txt': 7, '.tex': 7, '.yaml': 5, '.yml': 5, '.toml': 5, '.cfg': 5, '.ini': 5, '.conf': 5, '.css': 4, '.scss': 4, '.less': 4, '.html': 4, '.svelte': 4, '.vue': 4, '.json': 3, '.xml': 3, '.csv': 3, '.sql': 6, '.dockerfile': 6, '.dockerignore': 6, '.gitignore': 5, '.gitattributes': 5, '.env': 5, '.env.example': 5}
+
+FILENAME_SCORES = {'makefile': 6, 'dockerfile': 6}
 
 EXT_TO_LANG = {'.py': 'python', '.js': 'javascript', '.ts': 'typescript', '.jsx': 'javascript', '.tsx': 'typescript', '.go': 'go', '.rs': 'rust', '.java': 'java', '.kt': 'kotlin', '.c': 'c', '.cpp': 'cpp', '.h': 'c', '.hpp': 'cpp', '.rb': 'ruby', '.php': 'php', '.swift': 'swift', '.sh': 'bash', '.bash': 'bash', '.zsh': 'bash', '.ps1': 'powershell', '.md': 'markdown', '.rst': 'rst', '.tex': 'latex', '.yaml': 'yaml', '.yml': 'yaml', '.toml': 'toml', '.css': 'css', '.scss': 'scss', '.less': 'less', '.html': 'html', '.svelte': 'html', '.vue': 'html', '.json': 'json', '.xml': 'xml', '.sql': 'sql', '.dockerfile': 'dockerfile', '.env': 'text', '.gitignore': 'gitignore'}
 
@@ -37,7 +39,7 @@ class CtxArgumentParser(argparse.ArgumentParser):
 
 
 def parse_args(argv=None):
-    parser = CtxArgumentParser(prog='ctxpack', add_help=False)
+    parser = CtxArgumentParser(prog='ctxpack', add_help=True)
     parser.add_argument('--path', required=True)
     parser.add_argument('--task', required=True)
     parser.add_argument('--budget', required=True)
@@ -53,15 +55,15 @@ def parse_args(argv=None):
         sys.exit(1)
 
     if budget <= 0:
-        sys.stderr.write('ctxpack: error: --budget must be positive\n')
+        sys.stderr.write('ctxpack: error: --budget must be a positive integer\n')
         sys.exit(1)
 
     if not os.path.exists(args.path):
-        sys.stderr.write(f'ctxpack: error: path not found: {args.path}\n')
+        sys.stderr.write(f'ctxpack: error: Path not found: {args.path}\n')
         sys.exit(2)
 
     if not os.path.isdir(args.path):
-        sys.stderr.write(f'ctxpack: error: not a directory: {args.path}\n')
+        sys.stderr.write(f'ctxpack: error: Path is not a directory: {args.path}\n')
         sys.exit(2)
 
     args.budget = budget
@@ -153,7 +155,10 @@ def scan_files(root_path):
 def read_file(full_path):
     try:
         with open(full_path, 'r', encoding='utf-8', errors='strict') as f:
-            return f.read()
+            content = f.read()
+            if content.startswith('\ufeff'):
+                content = content[1:]
+            return content
     except (OSError, UnicodeDecodeError):
         return None
 
@@ -169,28 +174,36 @@ def parse_task(task_desc):
 
 def get_extension_score(filepath):
     _, ext = os.path.splitext(filepath)
-    return EXTENSION_SCORES.get(ext.lower(), 2)
+    if ext:
+        return EXTENSION_SCORES.get(ext.lower(), 2)
+    basename = os.path.basename(filepath)
+    return FILENAME_SCORES.get(basename.lower(), 2)
 
 
-def rank_files(included_files, task_keywords, root_path):
+def rank_files(included_files, task_keywords):
+    excluded = []
     if not task_keywords:
         ranked = []
         for f in included_files:
             content = read_file(f['full_path'])
             if content is None:
+                excluded.append({'path': f['path'], 'reason': 'Binary or unreadable file'})
                 continue
             if is_minified(content):
+                excluded.append({'path': f['path'], 'reason': 'Minified file'})
                 continue
             ranked.append((f['path'], content, 0.0, count_tokens(content)))
         ranked.sort(key=lambda x: x[0])
-        return ranked
+        return ranked, excluded
 
     scored = []
     for f in included_files:
         content = read_file(f['full_path'])
         if content is None:
+            excluded.append({'path': f['path'], 'reason': 'Binary or unreadable file'})
             continue
         if is_minified(content):
+            excluded.append({'path': f['path'], 'reason': 'Minified file'})
             continue
 
         content_lower = content.lower()
@@ -207,7 +220,7 @@ def rank_files(included_files, task_keywords, root_path):
         scored.append((f['path'], content, final, count_tokens(content)))
 
     scored.sort(key=lambda x: (-x[2], x[0]))
-    return scored
+    return scored, excluded
 
 
 def build_tree(root_path):
@@ -270,15 +283,10 @@ def bundle_files(ranked_files, budget, tree_str, task_desc, root_path):
     tree_full = f'## Project Structure\n\n```\n{tree_str}\n```\n\n'
     tree_cost = count_tokens(tree_full)
 
-    if tree_cost <= remaining and budget >= 500:
+    if tree_cost <= remaining:
         bundle_parts.append(tree_full)
         remaining -= tree_cost
         tree_included = True
-    elif tree_cost > remaining:
-        excluded.append({
-            'path': '<directory tree>',
-            'reason': f'Tree too large ({tree_cost} tokens) for remaining budget',
-        })
 
     for file_path, content, score, content_tokens in ranked_files:
         _, ext = os.path.splitext(file_path)
@@ -302,7 +310,7 @@ def bundle_files(ranked_files, budget, tree_str, task_desc, root_path):
                 'reason': f'Relevance score: {score:.4f}',
             })
         elif overhead_tokens < remaining:
-            marker = '\n[... TRUNCATED ...]\n'
+            marker = '\n[... TRUNCATED: file exceeds remaining budget ...]\n'
             trunc_overhead = file_header + code_start + marker + code_end
             max_content_chars = remaining * 4 - len(trunc_overhead)
             if max_content_chars > 0:
@@ -326,13 +334,12 @@ def bundle_files(ranked_files, budget, tree_str, task_desc, root_path):
     return bundle, used, included, excluded, tree_included
 
 
-def build_manifest(budget, used, included, excluded, task_desc):
+def build_manifest(budget, used, included, excluded):
     manifest = {
         'budget': budget,
         'used': used,
         'included': included,
         'excluded': excluded,
-        'task': task_desc,
     }
     return manifest
 
@@ -351,7 +358,7 @@ def main():
         sys.exit(2)
 
     task_keywords = parse_task(args.task)
-    ranked = rank_files(included_files, task_keywords, args.path)
+    ranked, excluded_from_rank = rank_files(included_files, task_keywords)
 
     tree_str = build_tree(args.path)
 
@@ -359,7 +366,7 @@ def main():
         ranked, args.budget, tree_str, args.task, args.path
     )
 
-    all_excluded = excluded_from_scan + excluded_from_bundle
+    all_excluded = excluded_from_scan + excluded_from_rank + excluded_from_bundle
 
     manifest_included = []
     for entry in included_in_bundle:
@@ -369,15 +376,18 @@ def main():
         manifest_included.append(me)
 
     if not tree_included:
-        all_excluded.append({
-            'path': '<directory tree>',
-            'reason': 'Excluded to stay within budget (budget too small or tree too large)',
-        })
+        tree_full = f'## Project Structure\n\n```\n{tree_str}\n```\n\n'
+        tree_cost = count_tokens(tree_full)
+        if tree_cost > args.budget:
+            reason = f'Tree too large ({tree_cost} tokens) for remaining budget'
+        else:
+            reason = 'Tree excluded to stay within budget'
+        all_excluded.append({'path': '<directory tree>', 'reason': reason})
 
     if args.out:
         try:
-            with open(args.out, 'w', encoding='utf-8') as f:
-                f.write(bundle)
+            with open(args.out, 'wb') as f:
+                f.write(bundle.encode('utf-8'))
         except OSError as e:
             sys.stderr.write(f'ctxpack: error: cannot write --out: {args.out} -- {e}\n')
             sys.exit(1)
@@ -389,11 +399,11 @@ def main():
             sys.stdout.write(bundle)
 
     if args.manifest:
-        manifest = build_manifest(args.budget, used, manifest_included, all_excluded, args.task)
+        manifest = build_manifest(args.budget, used, manifest_included, all_excluded)
         try:
-            with open(args.manifest, 'w', encoding='utf-8') as f:
-                json.dump(manifest, f, indent=2, ensure_ascii=False)
-                f.write('\n')
+            with open(args.manifest, 'wb') as f:
+                f.write(json.dumps(manifest, indent=2, ensure_ascii=False).encode('utf-8'))
+                f.write(b'\n')
         except OSError as e:
             sys.stderr.write(f'ctxpack: error: cannot write --manifest: {args.manifest} -- {e}\n')
             sys.exit(1)
