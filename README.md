@@ -99,16 +99,17 @@ ctxpack/
 ├── SPEC.md                     # Specification
 ├── README.md                   # This file
 ├── CLAUDE.md                   # Claude Code context
-├── AI_EXECUTION_PROTOCOL.md    # Workflow protocol
 ├── .gitignore
-├── docs/
-│   ├── AGENTS.md               # Agent configuration
-│   ├── ARCHITECTURE.md         # Architecture decisions
-│   ├── IMPLEMENTATION_PLAN.md  # Task plan
-│   ├── DEVELOPMENT_LOG.md      # Build history
-│   ├── PROMPTS.md              # Key prompts
-│   └── JOURNAL.md              # Reflection
-└── sample_project/             # Test fixture
+└── docs/
+    ├── AI_EXECUTION_PROTOCOL.md # Workflow protocol
+    ├── AGENTS.md                # Agent configuration
+    ├── ARCHITECTURE.md          # Architecture decisions
+    ├── DEVELOPMENT_LOG.md       # Build history
+    ├── IMPLEMENTATION_PLAN.md   # Task plan
+    ├── JOURNAL.md               # Reflection
+    ├── PROMPTS.md               # Key prompts
+    └── specs/
+        └── rebuild-ctxpack.md   # Build specification
 ```
 
 ---
