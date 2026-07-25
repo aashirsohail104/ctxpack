@@ -58,3 +58,22 @@
   - Noise filtering: .git, __pycache__, lockfiles, binary files, large files all excluded
   - Stdout output works correctly
 - **Result**: ✓
+
+## Entry 4
+
+- **Task**: Final documentation - PROMPTS.md, JOURNAL.md
+- **Objective**: Create graded documentation artifacts
+- **Files**: PROMPTS.md, JOURNAL.md
+- **Implementation summary**: PROMPTS.md documents 5 key prompts with what was asked, what was returned, and what changed. JOURNAL.md answers the 5 required reflection questions.
+- **Result**: ✓
+
+## Entry 5
+
+- **Task**: Final verification and commit
+- **Objective**: Run comprehensive edge case tests, verify everything works, commit all changes
+- **Verification**:
+  - Error handling: correct exit codes for all invalid inputs
+  - Budget compliance: never exceeds budget (tested 10-10000 tokens)
+  - Determinism: byte-identical output on repeat runs
+  - Noise filtering: all noise types excluded with correct reasons
+- **Result**: ✓
