@@ -95,17 +95,20 @@ The manifest is a JSON file accounting for every file considered.
 
 ```
 ctxpack/
-├── ctxpack.py          # Single-file CLI implementation
-├── SPEC.md             # Full specification
-├── README.md           # This file
-├── CLAUDE.md           # Claude Code context file
-├── AGENTS.md           # Agent configuration
-├── ARCHITECTURE.md     # Architecture decisions
-├── IMPLEMENTATION_PLAN.md  # Task plan
-├── DEVELOPMENT_LOG.md  # Development history
-├── PROMPTS.md          # Key prompts used
-├── JOURNAL.md          # Post-hoc reflection
-└── sample_project/     # Sample project for testing
+├── ctxpack.py                  # CLI implementation
+├── SPEC.md                     # Specification
+├── README.md                   # This file
+├── CLAUDE.md                   # Claude Code context
+├── AI_EXECUTION_PROTOCOL.md    # Workflow protocol
+├── .gitignore
+├── docs/
+│   ├── AGENTS.md               # Agent configuration
+│   ├── ARCHITECTURE.md         # Architecture decisions
+│   ├── IMPLEMENTATION_PLAN.md  # Task plan
+│   ├── DEVELOPMENT_LOG.md      # Build history
+│   ├── PROMPTS.md              # Key prompts
+│   └── JOURNAL.md              # Reflection
+└── sample_project/             # Test fixture
 ```
 
 ---

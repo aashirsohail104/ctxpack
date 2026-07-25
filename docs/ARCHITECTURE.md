@@ -111,17 +111,20 @@ Packer output → Formatter → bundle.md + manifest.json
 
 ```
 ctxpack/
-├── ctxpack.py          # Single file — all components
-├── SPEC.md             # Specification
-├── README.md           # This file
-├── CLAUDE.md           # Claude Code context
-├── AGENTS.md           # Agent configuration
-├── ARCHITECTURE.md     # This file
-├── IMPLEMENTATION_PLAN.md  # Task breakdown
-├── DEVELOPMENT_LOG.md  # Build history
-├── PROMPTS.md          # Key prompts
-├── JOURNAL.md          # Reflection
-└── sample_project/     # Test fixture
+├── ctxpack.py                  # CLI implementation
+├── SPEC.md                     # Specification
+├── README.md                   # Quick start
+├── CLAUDE.md                   # Claude Code context
+├── AI_EXECUTION_PROTOCOL.md    # Workflow protocol
+├── .gitignore
+├── docs/
+│   ├── AGENTS.md               # Agent configuration
+│   ├── ARCHITECTURE.md         # This file
+│   ├── IMPLEMENTATION_PLAN.md  # Task breakdown
+│   ├── DEVELOPMENT_LOG.md      # Build history
+│   ├── PROMPTS.md              # Key prompts
+│   └── JOURNAL.md              # Reflection
+└── sample_project/             # Test fixture
 ```
 
 ## Noise Patterns (Built-in)
