@@ -1,0 +1,13 @@
+# Test artifacts
+test_*.md
+test_*.json
+debug_*.py
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# OS
+.DS_Store
+Thumbs.db
