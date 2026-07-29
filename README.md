@@ -99,17 +99,21 @@ ctxpack/
 ├── SPEC.md                     # Specification
 ├── README.md                   # This file
 ├── CLAUDE.md                   # Claude Code context
+├── CHANGELOG.md                # Version history
 ├── .gitignore
+├── .ai/                        # AI engineering toolkit
+│   ├── agents/                 # 14 specialized agents
+│   ├── skills/                 # 20 reusable skills
+│   ├── commands/               # 18 invokable commands
+│   ├── workflows/              # 10 multi-step workflows
+│   ├── prompts/                # 11 prompt templates
+│   ├── platforms/              # 7 platform adapters
+│   ├── templates/              # 3 reusable templates
+│   ├── docs/                   # Toolkit documentation
+│   ├── examples/               # Usage examples
+│   └── standards/              # Engineering standards
 └── docs/
-    ├── AI_EXECUTION_PROTOCOL.md # Workflow protocol
-    ├── AGENTS.md                # Agent configuration
-    ├── ARCHITECTURE.md          # Architecture decisions
-    ├── DEVELOPMENT_LOG.md       # Build history
-    ├── IMPLEMENTATION_PLAN.md   # Task plan
-    ├── JOURNAL.md               # Reflection
-    ├── PROMPTS.md               # Key prompts
-    └── specs/
-        └── rebuild-ctxpack.md   # Build specification
+    └── ARCHITECTURE.md          # Architecture documentation
 ```
 
 ---
@@ -118,7 +122,7 @@ ctxpack/
 
 ```bash
 # Run tests
-python -c "import ctxpack; ctxpack.test()"  # or however tests are structured
+python -m unittest discover -s tests -t .
 
 # Test determinism
 python ctxpack.py --path . --task "test" --budget 1000 --out a.md

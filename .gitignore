@@ -1,16 +1,49 @@
-# Test artifacts
-test_*.md
-test_*.json
-debug_*.py
-
-# Python
+# --- Python ---
 __pycache__/
 *.py[cod]
+*$py.class
 *.egg-info/
+*.egg
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+.python-version
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+.coverage
+htmlcov/
+.tox/
+.nox/
 
-# OS
+# --- Generated test & report artifacts ---
+test_*.md
+test_*.json
+test_*.html
+debug_*.py
+/manifest.json
+/manifest_*.json
+report.html
+*.report.html
+
+# --- IDE / OS ---
+.idea/
+.vscode/
 .DS_Store
 Thumbs.db
+desktop.ini
 
-# Sample projects
+# --- Sample / scratch projects (root) ---
 sample_project/
+
+# --- AI / IDE settings ---
+.claude/
+
+# --- Editor / VCS scratch ---
+*.swp
+*.swo
+*~

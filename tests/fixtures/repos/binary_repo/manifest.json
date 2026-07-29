@@ -1,0 +1,17 @@
+{
+  "budget": 2000,
+  "used": 98,
+  "included": [
+    {
+      "path": "manifest.json",
+      "tokens": 71,
+      "reason": "Relevance score: 0.0000"
+    }
+  ],
+  "excluded": [
+    {
+      "path": "image.png",
+      "reason": "Image file"
+    }
+  ]
+}

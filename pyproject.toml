@@ -1,0 +1,45 @@
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ctxpack"
+version = "1.0.0"
+description = "Token-budgeted context bundler for AI coding assistants."
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+authors = [
+    {name = "ctxpack contributors"},
+]
+keywords = ["ai", "context", "token-budget", "cli", "markdown"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Documentation",
+    "Topic :: Text Processing :: Markup :: Markdown",
+]
+# Standard library only — no runtime dependencies.
+dependencies = []
+
+[project.scripts]
+ctxpack = "ctxpack.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/ctxpack/ctxpack"
+Issues = "https://github.com/ctxpack/ctxpack/issues"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["ctxpack*"]

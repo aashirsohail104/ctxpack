@@ -1,0 +1,11 @@
+include README.md
+include SPEC.md
+include CLAUDE.md
+include LICENSE
+include CHANGELOG.md
+include pyproject.toml
+recursive-include .ai *
+recursive-include docs *
+recursive-include tests/fixtures/repos *
+recursive-exclude __pycache__ *
+recursive-exclude *.py[cod]
